@@ -45,6 +45,33 @@ function countSuccesses(results) {
     return successes + criticals + Math.floor(criticals / 2) * 2;
 }
 
+function getOutcome(results, difficulty) {
+    const successes = countSuccesses(results);
+    const isPassed = successes >= difficulty;
+    const hasHungerCritical = results.hunger.includes(DiceTypeList.MessyCritical);
+    const criticals = [...results.regular, ...results.hunger]
+        .filter((result) => criticalTypes.has(result))
+        .length;
+
+    if (!isPassed && results.hunger.includes(DiceTypeList.BestialFailure)) {
+        return "Bestial Failure";
+    }
+
+    if (!isPassed) {
+        return "Failed";
+    }
+
+    if (hasHungerCritical && criticals >= 2) {
+        return "Messy Critical";
+    }
+
+    return "Passed";
+}
+
+function getOutcomeRange(results) {
+    return `${getOutcome(results, 9)} / ${getOutcome(results, 1)}`;
+}
+
 function setResultMessage(resultFaces, message) {
     resultFaces.textContent = message;
     resultFaces.classList.add("result-faces--message");
@@ -89,8 +116,9 @@ function appendResultFace(resultFaces, die, selectedDiceIndexes, rerollButton) {
     resultFaces.append(button);
 }
 
-function renderResult(results, successCount, resultFaces, selectedDiceIndexes, rerollButton) {
+function renderResult(results, successCount, rollOutcome, resultFaces, selectedDiceIndexes, rerollButton) {
     successCount.value = countSuccesses(results);
+    rollOutcome.value = getOutcomeRange(results);
     selectedDiceIndexes.clear();
     setRerollButtonState(rerollButton, selectedDiceIndexes);
     resultFaces.replaceChildren();
@@ -107,7 +135,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     const hungerInput = document.querySelector("#hunger-dice");
     const rollButton = document.querySelector("#roll-button");
     const rerollButton = document.querySelector("#reroll-button");
+    const helpButton = document.querySelector("#help-button");
+    const helpOverlay = document.querySelector("#help-overlay");
+    const helpCloseButton = document.querySelector("#help-close-button");
     const successCount = document.querySelector("#success-count");
+    const rollOutcome = document.querySelector("#roll-outcome");
     const resultFaces = document.querySelector("#result-faces");
 
     const box = new DicesBox("#dice-box");
@@ -122,6 +154,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     setResultMessage(resultFaces, "Choose dice and roll.");
     rollButton.disabled = false;
 
+    function closeHelp() {
+        helpOverlay.classList.remove("help-overlay--open");
+        helpOverlay.setAttribute("aria-hidden", "true");
+    }
+
+    helpButton.addEventListener("click", () => {
+        helpOverlay.classList.add("help-overlay--open");
+        helpOverlay.setAttribute("aria-hidden", "false");
+    });
+
+    helpCloseButton.addEventListener("click", closeHelp);
+
+    helpOverlay.addEventListener("click", (event) => {
+        if (event.target === helpOverlay) closeHelp();
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeHelp();
+    });
+
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -133,6 +185,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         if (regular + hunger === 0) {
             successCount.value = 0;
+            rollOutcome.value = "-";
             selectedDiceIndexes.clear();
             setRerollButtonState(rerollButton, selectedDiceIndexes);
             setResultMessage(resultFaces, "Add at least one die.");
@@ -144,11 +197,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         setResultMessage(resultFaces, "Rolling...");
 
         try {
-            const results = await box.roll(hunger, regular, [DiceTypeList.MessyCritical, DiceTypeList.MessyCritical], [DiceTypeList.Critical, DiceTypeList.Critical]);
-            renderResult(results, successCount, resultFaces, selectedDiceIndexes, rerollButton);
+            const results = await box.roll(hunger, regular);
+            renderResult(results, successCount, rollOutcome, resultFaces, selectedDiceIndexes, rerollButton);
         } catch (error) {
             console.error(error);
             successCount.value = 0;
+            rollOutcome.value = "-";
             selectedDiceIndexes.clear();
             setRerollButtonState(rerollButton, selectedDiceIndexes);
             setResultMessage(resultFaces, "Could not roll dice.");
@@ -167,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         try {
             const results = await box.reroll(diceIndexes);
-            renderResult(results, successCount, resultFaces, selectedDiceIndexes, rerollButton);
+            renderResult(results, successCount, rollOutcome, resultFaces, selectedDiceIndexes, rerollButton);
         } catch (error) {
             console.error(error);
             setRerollButtonState(rerollButton, selectedDiceIndexes);
