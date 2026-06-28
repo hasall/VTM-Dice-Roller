@@ -1,5 +1,9 @@
 import { DiceTypeList, DicesBox } from "./dice.js"
 
+function assetPath(path) {
+    return `${import.meta.env.BASE_URL}${path}`;
+}
+
 const diceLabels = {
     [DiceTypeList.BestialFailure]: "bestial failure",
     [DiceTypeList.Failure]: "failure",
@@ -10,15 +14,15 @@ const diceLabels = {
 
 const resultFacePaths = {
     hunger: {
-        [DiceTypeList.BestialFailure]: "/assets/dice/result_faces/Dice_Hunger_BestialFailure.png",
-        [DiceTypeList.Failure]: "/assets/dice/result_faces/Dice_Hunger_Failure.png",
-        [DiceTypeList.Success]: "/assets/dice/result_faces/Dice_Hunger_Success.png",
-        [DiceTypeList.MessyCritical]: "/assets/dice/result_faces/Dice_Hunger_MessyCritical.png"
+        [DiceTypeList.BestialFailure]: assetPath("assets/dice/result_faces/Dice_Hunger_BestialFailure.png"),
+        [DiceTypeList.Failure]: assetPath("assets/dice/result_faces/Dice_Hunger_Failure.png"),
+        [DiceTypeList.Success]: assetPath("assets/dice/result_faces/Dice_Hunger_Success.png"),
+        [DiceTypeList.MessyCritical]: assetPath("assets/dice/result_faces/Dice_Hunger_MessyCritical.png")
     },
     regular: {
-        [DiceTypeList.Failure]: "/assets/dice/result_faces/Dice_Regular_Failure.png",
-        [DiceTypeList.Success]: "/assets/dice/result_faces/Dice_Regular_Success.png",
-        [DiceTypeList.Critical]: "/assets/dice/result_faces/Dice_Regular_Critical.png"
+        [DiceTypeList.Failure]: assetPath("assets/dice/result_faces/Dice_Regular_Failure.png"),
+        [DiceTypeList.Success]: assetPath("assets/dice/result_faces/Dice_Regular_Success.png"),
+        [DiceTypeList.Critical]: assetPath("assets/dice/result_faces/Dice_Regular_Critical.png")
     }
 };
 

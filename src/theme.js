@@ -12,7 +12,7 @@ const diceThemes = {
         material: "glass"
     },
     DiceBox: {
-        assetPath: "/assets/dice/",
+        assetPath: `${import.meta.env.BASE_URL}assets/dice/`,
         light_intensity: 1,
         gravity_multiplier: 600,
         baseScale: 100,

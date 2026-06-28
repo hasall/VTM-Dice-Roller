@@ -2,6 +2,10 @@ import './style.css'
 import DiceBox from '@3d-dice/dice-box-threejs'
 import { diceThemes } from "./theme.js"
 
+function assetPath(path) {
+    return `${import.meta.env.BASE_URL}${path}`;
+}
+
 // Dice Type
 
 /**
@@ -123,16 +127,16 @@ function loadImage(src) {
 
 async function createHungerD10(box) {
     const images = await Promise.all([
-        "/assets/dice/faces/Dice_Hunger_BestialFailure.png",
-        "/assets/dice/faces/Dice_Hunger_Failure.png",
-        "/assets/dice/faces/Dice_Hunger_Failure.png",
-        "/assets/dice/faces/Dice_Hunger_Failure.png",
-        "/assets/dice/faces/Dice_Hunger_Failure.png",
-        "/assets/dice/faces/Dice_Hunger_Success.png",
-        "/assets/dice/faces/Dice_Hunger_Success.png",
-        "/assets/dice/faces/Dice_Hunger_Success.png",
-        "/assets/dice/faces/Dice_Hunger_Success.png",
-        "/assets/dice/faces/Dice_Hunger_MessyCritical.png"
+        assetPath("assets/dice/faces/Dice_Hunger_BestialFailure.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Success.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Success.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Success.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_Success.png"),
+        assetPath("assets/dice/faces/Dice_Hunger_MessyCritical.png")
     ].map(loadImage));
 
     const original = box.DiceFactory.get("d10");
@@ -156,16 +160,16 @@ async function createHungerD10(box) {
 }
 async function createRegularD10(box) {
     const images = await Promise.all([
-        "/assets/dice/faces/Dice_Regular_Failure.png",
-        "/assets/dice/faces/Dice_Regular_Failure.png",
-        "/assets/dice/faces/Dice_Regular_Failure.png",
-        "/assets/dice/faces/Dice_Regular_Failure.png",
-        "/assets/dice/faces/Dice_Regular_Failure.png",
-        "/assets/dice/faces/Dice_Regular_Success.png",
-        "/assets/dice/faces/Dice_Regular_Success.png",
-        "/assets/dice/faces/Dice_Regular_Success.png",
-        "/assets/dice/faces/Dice_Regular_Success.png",
-        "/assets/dice/faces/Dice_Regular_Critical.png"
+        assetPath("assets/dice/faces/Dice_Regular_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Failure.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Success.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Success.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Success.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Success.png"),
+        assetPath("assets/dice/faces/Dice_Regular_Critical.png")
     ].map(loadImage));
 
     const original = box.DiceFactory.get("d10");
