@@ -5,13 +5,13 @@
 
 const diceThemes = {
     regular: {
-        background: "#555555",
+        background: "#202020",
         foreground: "#ffffff",
         texture: "none",
         material: "glass"
     },
     hunger: {
-        background: "#f00000",
+        background: "#CA0000",
         foreground: "#ffffff",
         texture: "none",
         material: "glass"

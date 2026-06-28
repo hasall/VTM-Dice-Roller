@@ -1,4 +1,4 @@
-import {diceTypeList, DicesBox} from "./dice.js"
+import {DiceTypeList, DicesBox} from "./dice.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
     const box = new DicesBox("#dice-box", (hunger, regular) => {
@@ -6,18 +6,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log(regular);
     });
     await box.initialize();
-    // box.roll(5, 5, [
-    //     diceTypeList.BestialFailure, 
-    //     diceTypeList.Failure,
-    //     diceTypeList.Success,
-    //     diceTypeList.MessyCritical
-    // ], 
-    // [
-    //     diceTypeList.Failure,
-    //     diceTypeList.Success,
-    //     diceTypeList.Critical
-    // ]);
-    await box.newRoll();
-    await box.newRoll();
-    await box.reroll();
+
+    await box.roll(2, 5, 
+        [DiceTypeList.BestialFailure, DiceTypeList.MessyCritical], 
+        [DiceTypeList.Failure, DiceTypeList.Critical, DiceTypeList.Success]
+    ).then(results => {console.log(results)});
+    await box.reroll([1, 2]).then(results => {console.log(results)});
 })
