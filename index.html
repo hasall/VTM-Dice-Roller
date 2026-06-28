@@ -9,6 +9,27 @@
   <body>
     <div id="vtt-stage">
       <div id="dice-box"></div>
+      <form id="roll-panel">
+        <div class="roll-panel__fields">
+          <label>
+            <span>Hunger</span>
+            <input id="hunger-dice" type="number" min="0" max="5" value="2" />
+          </label>
+          <label>
+            <span>Regular</span>
+            <input id="regular-dice" type="number" min="0" max="30" value="5" />
+          </label>
+        </div>
+        <button id="roll-button" type="submit">Roll</button>
+        <div id="roll-result" aria-live="polite">
+          <label class="success-field">
+            <span>Successes</span>
+            <output id="success-count">0</output>
+          </label>
+          <div id="result-faces">Choose dice and roll.</div>
+        </div>
+        <button id="reroll-button" type="button" disabled>Reroll selected</button>
+      </form>
     </div>
     <script type="module" src="/src/game.js"></script>
   </body>

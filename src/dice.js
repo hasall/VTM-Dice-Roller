@@ -87,6 +87,31 @@ let regularDiceLastResult = [];
 /** @type {((hunger: Array<string>, regular: Array<string>) => undefined) | null} */
 let diceCompleteCB = null;
 
+function readDiceResults(diceList) {
+    return diceList.reduce((results, dice, index) => {
+        const value = dice.result.at(-1).value;
+        const type = dice.notation.type === "dhunger10" ? "hunger" : "regular";
+        const result = type === "hunger"
+            ? numberToHungerDice(value)
+            : numberToRegularDice(value);
+        const entry = { index, type, result };
+
+        results.dice.push(entry);
+
+        if (type === "hunger") {
+            results.hunger.push(result);
+        } else {
+            results.regular.push(result);
+        }
+
+        return results;
+    }, {
+        dice: [],
+        hunger: [],
+        regular: []
+    });
+}
+
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const image = new Image();
@@ -191,14 +216,7 @@ class DicesBox {
     async reroll(listOfNumbers) {
         return new Promise((resolve, reject) => {
             this._Box.reroll(listOfNumbers).then(() => {
-                console.log("Total size: ", this._Box.diceList.length);
-                resolve(
-                    this._Box.diceList
-                        .map(v =>
-                            [v.notation.type, v.result.at(-1).value]
-                        )
-                        .map((v, i) => i < v[0] == "dhunger10" ? numberToHungerDice(v[1]) : numberToRegularDice(v[1]))
-                );
+                resolve(readDiceResults(this._Box.diceList));
             }).catch((e) => {
                 console.log("reroll catch", e);
                 reject();
@@ -217,36 +235,42 @@ class DicesBox {
     async roll(hunger, regular, listOfHungerValues = [], listOfRegularValues = []) {
         return new Promise(async (resolve, reject) => {
             this._Box.clearDice();
-            let diceLength = 0;
-            let n;
 
-            const cb = () => {
-                console.log("Total size: ", this._Box.diceList.length);
-                resolve(
-                    this._Box.diceList
-                        .map(v =>
-                            [v.notation.type, v.result.at(-1).value]
-                        )
-                        .map((v, i) => i < v[0] == "dhunger10" ? numberToHungerDice(v[1]) : numberToRegularDice(v[1]))
-                );
+            if (hunger <= 0 && regular <= 0) {
+                resolve({ dice: [], hunger: [], regular: [] });
+                return;
             }
 
-            await this._Box.updateConfig({
-                theme_customColorset: diceThemes.hunger
-            });
+            let diceLength = 0;
 
-            const notationVectors1 = this._Box.startClickThrow(`${hunger}dhunger10@${listOfHungerValues.map(value => diceTypeToNumber(value)).join(",")}`);
-            for (let t = 0, n = notationVectors1.vectors.length; t < n; ++t)
-                this._Box.spawnDice(notationVectors1.vectors[t]);
-            diceLength = this._Box.diceList.length;
+            const cb = () => {
+                resolve(readDiceResults(this._Box.diceList));
+            }
 
-            await this._Box.updateConfig({
-                theme_customColorset: diceThemes.regular
-            });
+            let notationVectors1 = { vectors: [], result: [] };
 
-            const notationVectors2 = this._Box.startClickThrow(`${regular}dregular10@${listOfRegularValues.map(value => diceTypeToNumber(value)).join(",")}`);
-            for (let t = 0, n = notationVectors2.vectors.length; t < n; ++t)
-                this._Box.spawnDice(notationVectors2.vectors[t]);
+            if (hunger > 0) {
+                await this._Box.updateConfig({
+                    theme_customColorset: diceThemes.hunger
+                });
+
+                notationVectors1 = this._Box.startClickThrow(`${hunger}dhunger10@${listOfHungerValues.map(value => diceTypeToNumber(value)).join(",")}`);
+                for (let t = 0, n = notationVectors1.vectors.length; t < n; ++t)
+                    this._Box.spawnDice(notationVectors1.vectors[t]);
+                diceLength = this._Box.diceList.length;
+            }
+
+            let notationVectors2 = { vectors: [], result: [] };
+
+            if (regular > 0) {
+                await this._Box.updateConfig({
+                    theme_customColorset: diceThemes.regular
+                });
+
+                notationVectors2 = this._Box.startClickThrow(`${regular}dregular10@${listOfRegularValues.map(value => diceTypeToNumber(value)).join(",")}`);
+                for (let t = 0, n = notationVectors2.vectors.length; t < n; ++t)
+                    this._Box.spawnDice(notationVectors2.vectors[t]);
+            }
 
 
             this._Box.simulateThrow(); this._Box.steps = 0; this._Box.iteration = 0;

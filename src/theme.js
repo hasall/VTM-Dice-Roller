@@ -1,8 +1,3 @@
-// const boardTheme = {
-//     background: "#17191f",
-//     grid: "rgba(255, 255, 255, 0.05)"
-// };
-
 const diceThemes = {
     regular: {
         background: "#202020",
@@ -11,7 +6,7 @@ const diceThemes = {
         material: "glass"
     },
     hunger: {
-        background: "#CA0000",
+        background: "#D00000",
         foreground: "#ffffff",
         texture: "none",
         material: "glass"
