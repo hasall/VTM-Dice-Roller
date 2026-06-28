@@ -23,10 +23,13 @@ const resultFacePaths = {
 };
 
 const successTypes = new Set([
-    DiceTypeList.Success,
+    DiceTypeList.Success
+]);
+
+const criticalTypes = new Set([
     DiceTypeList.MessyCritical,
     DiceTypeList.Critical
-]);
+])
 
 function clampDiceCount(value, min, max) {
     const count = Number.parseInt(value, 10);
@@ -35,9 +38,11 @@ function clampDiceCount(value, min, max) {
 }
 
 function countSuccesses(results) {
-    return [...results.regular, ...results.hunger]
-        .filter((result) => successTypes.has(result))
-        .length;
+    const allResults = [...results.regular, ...results.hunger];
+    const successes = allResults.filter((result) => successTypes.has(result)).length;
+    const criticals = allResults.filter((result) => criticalTypes.has(result)).length;
+
+    return successes + criticals + Math.floor(criticals / 2) * 2;
 }
 
 function setResultMessage(resultFaces, message) {
@@ -139,7 +144,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         setResultMessage(resultFaces, "Rolling...");
 
         try {
-            const results = await box.roll(hunger, regular);
+            const results = await box.roll(hunger, regular, [DiceTypeList.MessyCritical, DiceTypeList.MessyCritical], [DiceTypeList.Critical, DiceTypeList.Critical]);
             renderResult(results, successCount, resultFaces, selectedDiceIndexes, rerollButton);
         } catch (error) {
             console.error(error);
