@@ -1,0 +1,45 @@
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+#vtt-stage {
+  position: fixed;
+  inset: 0;
+  background-color: #17191f;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(135deg, #1d2028, #101218);
+  background-position:
+    -1px -1px,
+    -1px -1px,
+    -1px -1px,
+    -1px -1px,
+    center,
+    center;
+  background-size:
+    160px 160px,
+    160px 160px,
+    32px 32px,
+    32px 32px,
+    cover,
+    cover;
+}
+
+#dice-box {
+  position: absolute;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  overflow: hidden;
+  pointer-events: none;
+  left: auto;
+  bottom: auto;
+}
