@@ -215,6 +215,10 @@ class DicesBox {
      */
     async reroll(listOfNumbers) {
         return new Promise((resolve, reject) => {
+            this._Box.last_time = 0;
+            this._Box.steps = 0;
+            this._Box.iteration = 0;
+
             this._Box.reroll(listOfNumbers).then(() => {
                 resolve(readDiceResults(this._Box.diceList));
             }).catch((e) => {
