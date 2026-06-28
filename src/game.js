@@ -80,8 +80,8 @@ function setResultMessage(resultFaces, message) {
 function setRerollButtonState(rerollButton, selectedDiceIndexes) {
     rerollButton.disabled = selectedDiceIndexes.size === 0;
     rerollButton.textContent = selectedDiceIndexes.size > 0
-        ? `Reroll selected (${selectedDiceIndexes.size})`
-        : "Reroll selected";
+        ? `Reroll selected dice (${selectedDiceIndexes.size})`
+        : "Reroll selected dice";
 }
 
 function appendResultFace(resultFaces, die, selectedDiceIndexes, rerollButton) {

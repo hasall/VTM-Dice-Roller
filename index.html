@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>discord_vtt</title>
+    <title>VTM Dice Roller</title>
   </head>
   <body>
     <div id="vtt-stage">
@@ -28,18 +28,18 @@
               <output id="success-count">0</output>
             </label>
             <label class="success-field">
-              <span>Outcome for 9 and for 1 difficulties</span>
+              <span>Outcome (Difficulty 9 / 1)</span>
               <output id="roll-outcome">-</output>
             </label>
           </div>
           <div id="result-faces">Choose dice and roll.</div>
         </div>
-        <button id="reroll-button" type="button" disabled>Reroll selected</button>
-        <button id="help-button" type="button">Help</button>
+        <button id="reroll-button" type="button" disabled>Reroll selected dice</button>
+        <button id="help-button" type="button">VTM Basic Mechanics</button>
       </form>
       <div id="help-overlay" aria-hidden="true">
         <button id="help-close-button" type="button" aria-label="Close help">Close</button>
-        <img src="/assets/VTM_Basic_Mechanics_Dark.jpg" alt="VTM basic mechanics" />
+        <img src="/assets/VTM_Basic_Mechanics_Dark.jpg" alt="VTM Basic Mechanics" />
       </div>
     </div>
     <script type="module" src="/src/game.js"></script>
