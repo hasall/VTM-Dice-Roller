@@ -10,31 +10,50 @@
     <div id="vtt-stage">
       <div id="dice-box"></div>
       <form id="roll-panel">
-        <div class="roll-panel__fields">
-          <label>
-            <span>Hunger</span>
-            <input id="hunger-dice" type="number" min="0" max="5" value="2" />
-          </label>
-          <label>
-            <span>Regular</span>
-            <input id="regular-dice" type="number" min="0" max="30" value="5" />
-          </label>
+        <div class="roll-tabs" role="tablist" aria-label="Roll mode">
+          <button id="vtm-tab" class="roll-tab roll-tab--active" type="button" role="tab" aria-selected="true" aria-controls="vtm-panel">VTM</button>
+          <button id="standard-tab" class="roll-tab" type="button" role="tab" aria-selected="false" aria-controls="standard-panel">Standard</button>
         </div>
-        <button id="roll-button" type="submit">Roll</button>
-        <div id="roll-result" aria-live="polite">
-          <div class="result-summary">
-            <label class="success-field">
-              <span>Successes</span>
-              <output id="success-count">0</output>
+
+        <section id="vtm-panel" class="roll-mode-panel" role="tabpanel" aria-labelledby="vtm-tab">
+          <div class="roll-panel__fields">
+            <label>
+              <span>Hunger</span>
+              <input id="hunger-dice" type="number" min="0" max="5" value="2" />
             </label>
-            <label class="success-field">
-              <span>Outcome (Difficulty 9 / 1)</span>
-              <output id="roll-outcome">-</output>
+            <label>
+              <span>Regular</span>
+              <input id="regular-dice" type="number" min="0" max="30" value="5" />
             </label>
           </div>
-          <div id="result-faces">Choose dice and roll.</div>
-        </div>
-        <button id="reroll-button" type="button" disabled>Reroll selected dice</button>
+          <button id="roll-button" type="submit">Roll</button>
+          <div id="roll-result" aria-live="polite">
+            <div class="result-summary">
+              <label class="success-field">
+                <span>Successes</span>
+                <output id="success-count">0</output>
+              </label>
+              <label class="success-field">
+                <span>Outcome (Difficulty 9 / 1)</span>
+                <output id="roll-outcome">-</output>
+              </label>
+            </div>
+            <div id="result-faces">Choose dice and roll.</div>
+          </div>
+          <button id="reroll-button" type="button" disabled>Reroll selected dice</button>
+        </section>
+
+        <section id="standard-panel" class="roll-mode-panel" role="tabpanel" aria-labelledby="standard-tab" hidden>
+          <div class="roll-panel__fields standard-fields">
+            <label>
+              <span>Notation</span>
+              <input id="standard-notation" type="text" value="1d10+1d20" spellcheck="false" />
+            </label>
+          </div>
+          <button id="standard-roll-button" type="button">Roll standard dice</button>
+          <div id="standard-result" aria-live="polite">Choose dice and roll.</div>
+        </section>
+
         <button id="help-button" type="button">VTM Basic Mechanics</button>
       </form>
       <div id="help-overlay" aria-hidden="true">

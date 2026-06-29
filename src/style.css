@@ -64,10 +64,49 @@ body {
   backdrop-filter: blur(12px);
 }
 
+.roll-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+}
+
+.roll-tab {
+  min-height: 34px;
+  color: rgba(247, 244, 238, 0.72);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.roll-tab--active {
+  color: #fff8f2;
+  background: rgba(168, 31, 49, 0.72);
+}
+
+.roll-mode-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.roll-mode-panel[hidden] {
+  display: none;
+}
+
 .roll-panel__fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.standard-fields {
+  grid-template-columns: 1fr;
 }
 
 #roll-panel label {
@@ -79,7 +118,8 @@ body {
   font-weight: 650;
 }
 
-#roll-panel input {
+#roll-panel input,
+#roll-panel select {
   width: 100%;
   min-width: 0;
   box-sizing: border-box;
@@ -91,9 +131,15 @@ body {
   font: inherit;
 }
 
-#roll-panel input:focus {
+#roll-panel input:focus,
+#roll-panel select:focus {
   outline: 2px solid rgba(174, 35, 51, 0.72);
   outline-offset: 2px;
+}
+
+#roll-panel select option {
+  color: #15171d;
+  background: #ffffff;
 }
 
 #roll-button {
@@ -107,7 +153,8 @@ body {
   cursor: pointer;
 }
 
-#reroll-button {
+#reroll-button,
+#standard-roll-button {
   min-height: 38px;
   color: rgba(247, 244, 238, 0.92);
   background: rgba(255, 255, 255, 0.08);
@@ -130,7 +177,8 @@ body {
 }
 
 #roll-button:disabled,
-#reroll-button:disabled {
+#reroll-button:disabled,
+#standard-roll-button:disabled {
   cursor: wait;
   opacity: 0.68;
 }
@@ -188,6 +236,20 @@ body {
   border-radius: 6px;
   font-size: 14px;
   line-height: 1.45;
+}
+
+#standard-result {
+  min-height: 96px;
+  box-sizing: border-box;
+  padding: 12px;
+  color: rgba(247, 244, 238, 0.86);
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.45;
+  white-space: pre-line;
 }
 
 .result-summary {
@@ -279,6 +341,7 @@ body {
   }
 
   .roll-panel__fields,
+  .standard-fields,
   .result-summary {
     grid-template-columns: 1fr;
   }

@@ -41,6 +41,21 @@ function clampDiceCount(value, min, max) {
     return Math.min(Math.max(count, min), max);
 }
 
+const standardNotationPattern = /^\s*(?:\d*)d(?:4|6|8|10|12|20|100)(?:\s*[+-]\s*(?:(?:\d*)d(?:4|6|8|10|12|20|100)|\d+))*\s*$/i;
+
+function normalizeStandardNotation(value) {
+    return value.replace(/\s+/g, "").toLowerCase();
+}
+
+function countNotationDice(notation) {
+    return [...notation.matchAll(/(\d*)d(?:4|6|8|10|12|20|100)/gi)]
+        .reduce((total, match) => total + (match[1] === "" ? 1 : Number.parseInt(match[1], 10)), 0);
+}
+
+function isValidStandardNotation(notation) {
+    return standardNotationPattern.test(notation) && countNotationDice(notation) <= 30;
+}
+
 function countSuccesses(results) {
     const allResults = [...results.regular, ...results.hunger];
     const successes = allResults.filter((result) => successTypes.has(result)).length;
@@ -133,11 +148,29 @@ function renderResult(results, successCount, rollOutcome, resultFaces, selectedD
     );
 }
 
+function renderStandardResult(results, standardResult) {
+    const rollText = results.rolls
+        .map((roll) => `${roll.type}: ${roll.value}`)
+        .join(", ");
+
+    standardResult.textContent = [
+        `Notation: ${results.notation}`,
+        `Total: ${results.total}`,
+        `Rolls: ${rollText}`
+    ].join("\n");
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
     const form = document.querySelector("#roll-panel");
+    const vtmTab = document.querySelector("#vtm-tab");
+    const standardTab = document.querySelector("#standard-tab");
+    const vtmPanel = document.querySelector("#vtm-panel");
+    const standardPanel = document.querySelector("#standard-panel");
     const regularInput = document.querySelector("#regular-dice");
     const hungerInput = document.querySelector("#hunger-dice");
+    const standardNotationInput = document.querySelector("#standard-notation");
     const rollButton = document.querySelector("#roll-button");
+    const standardRollButton = document.querySelector("#standard-roll-button");
     const rerollButton = document.querySelector("#reroll-button");
     const helpButton = document.querySelector("#help-button");
     const helpOverlay = document.querySelector("#help-overlay");
@@ -145,18 +178,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     const successCount = document.querySelector("#success-count");
     const rollOutcome = document.querySelector("#roll-outcome");
     const resultFaces = document.querySelector("#result-faces");
+    const standardResult = document.querySelector("#standard-result");
 
     const box = new DicesBox("#dice-box");
     const selectedDiceIndexes = new Set();
+    let isRolling = false;
+
+    function setRollingState(isActive) {
+        isRolling = isActive;
+        rollButton.disabled = isActive;
+        standardRollButton.disabled = isActive;
+        rerollButton.disabled = isActive || selectedDiceIndexes.size === 0;
+    }
 
     setResultMessage(resultFaces, "Loading dice...");
     rollButton.disabled = true;
+    standardRollButton.disabled = true;
     rerollButton.disabled = true;
 
     await box.initialize();
 
     setResultMessage(resultFaces, "Choose dice and roll.");
     rollButton.disabled = false;
+    standardRollButton.disabled = false;
+
+    function activateTab(tabName) {
+        const isVtm = tabName === "vtm";
+
+        vtmTab.classList.toggle("roll-tab--active", isVtm);
+        standardTab.classList.toggle("roll-tab--active", !isVtm);
+        vtmTab.setAttribute("aria-selected", String(isVtm));
+        standardTab.setAttribute("aria-selected", String(!isVtm));
+        vtmPanel.hidden = !isVtm;
+        standardPanel.hidden = isVtm;
+    }
+
+    vtmTab.addEventListener("click", () => activateTab("vtm"));
+    standardTab.addEventListener("click", () => activateTab("standard"));
 
     function closeHelp() {
         helpOverlay.classList.remove("help-overlay--open");
@@ -178,8 +236,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         if (event.key === "Escape") closeHelp();
     });
 
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
+    async function rollVtm() {
+        if (isRolling) return;
 
         const regular = clampDiceCount(regularInput.value, 0, 30);
         const hunger = clampDiceCount(hungerInput.value, 0, 5);
@@ -196,8 +254,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        rollButton.disabled = true;
-        rerollButton.disabled = true;
+        setRollingState(true);
         setResultMessage(resultFaces, "Rolling...");
 
         try {
@@ -211,17 +268,63 @@ document.addEventListener("DOMContentLoaded", async () => {
             setRerollButtonState(rerollButton, selectedDiceIndexes);
             setResultMessage(resultFaces, "Could not roll dice.");
         } finally {
-            rollButton.disabled = false;
+            setRollingState(false);
+        }
+    }
+
+    async function rollStandard() {
+        if (isRolling) return;
+
+        const notation = normalizeStandardNotation(standardNotationInput.value);
+
+        standardNotationInput.value = notation;
+
+        if (!isValidStandardNotation(notation)) {
+            standardResult.textContent = "Use notation like 1d10+1d20. Up to 30 dice.";
+            return;
+        }
+
+        setRollingState(true);
+        standardResult.textContent = "Rolling...";
+
+        try {
+            const results = await box.rollStandard(notation);
+            selectedDiceIndexes.clear();
+            setRerollButtonState(rerollButton, selectedDiceIndexes);
+            renderStandardResult(results, standardResult);
+        } catch (error) {
+            console.error(error);
+            standardResult.textContent = "Could not roll standard dice.";
+        } finally {
+            setRollingState(false);
+        }
+    }
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (standardPanel.hidden) {
+            await rollVtm();
+        } else {
+            await rollStandard();
         }
     });
 
+    standardRollButton.addEventListener("click", rollStandard);
+
+    standardNotationInput.addEventListener("keydown", async (event) => {
+        if (event.key !== "Enter") return;
+
+        event.preventDefault();
+        await rollStandard();
+    });
+
     rerollButton.addEventListener("click", async () => {
-        if (selectedDiceIndexes.size === 0) return;
+        if (isRolling || selectedDiceIndexes.size === 0) return;
 
         const diceIndexes = [...selectedDiceIndexes].sort((a, b) => a - b);
 
-        rollButton.disabled = true;
-        rerollButton.disabled = true;
+        setRollingState(true);
 
         try {
             const results = await box.reroll(diceIndexes);
@@ -232,7 +335,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             resultFaces.classList.add("result-faces--message");
             resultFaces.textContent = "Could not reroll selected dice.";
         } finally {
-            rollButton.disabled = false;
+            setRollingState(false);
         }
     });
 })

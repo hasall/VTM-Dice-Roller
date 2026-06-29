@@ -116,6 +116,21 @@ function readDiceResults(diceList) {
     });
 }
 
+function readStandardDiceResults(results, notation) {
+    const rolls = results.sets.flatMap((set) =>
+        set.rolls.map((roll) => ({
+            type: set.type,
+            value: roll.value
+        }))
+    );
+
+    return {
+        notation,
+        rolls,
+        total: results.total
+    };
+}
+
 function loadImage(src) {
     return new Promise((resolve, reject) => {
         const image = new Image();
@@ -230,6 +245,34 @@ class DicesBox {
                 reject();
             });
         })
+    }
+
+    /**
+     * roll common dice notation, like 3d6 or 1d10+1d20
+     * @param {string} notation
+     * @returns {Promise<{notation: string, rolls: Array<{type: string, value: number}>, total: number}>}
+     */
+    async rollStandard(notation) {
+        const colors = [
+            "#00ffcb",
+            "#ff6600",
+            "#1d66af",
+            "#7028ed",
+            "#c4c427",
+            "#d81128"
+        ];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        await this._Box.updateConfig({
+            theme_customColorset: {
+                background: randomColor,
+                ...diceThemes.standard
+            }
+        });
+
+        const results = await this._Box.roll(notation);
+
+        return readStandardDiceResults(results, notation);
     }
 
     /**

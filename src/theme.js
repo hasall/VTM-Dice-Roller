@@ -1,15 +1,21 @@
 const diceThemes = {
+    standard: {
+        // background: "#c4c427",
+        foreground: "#ffffff",
+        texture: "none",
+        material: "metal"
+    },
     regular: {
         background: "#202020",
         foreground: "#ffffff",
         texture: "none",
-        material: "glass"
+        material: "metal"
     },
     hunger: {
-        background: "#D00000",
+        background: "#FF0000",
         foreground: "#ffffff",
         texture: "none",
-        material: "glass"
+        material: "metal"
     },
     DiceBox: {
         assetPath: `${import.meta.env.BASE_URL}assets/dice/`,
