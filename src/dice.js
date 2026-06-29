@@ -253,19 +253,8 @@ class DicesBox {
      * @returns {Promise<{notation: string, rolls: Array<{type: string, value: number}>, total: number}>}
      */
     async rollStandard(notation) {
-        const colors = [
-            "#00ffcb",
-            "#ff6600",
-            "#1d66af",
-            "#7028ed",
-            "#c4c427",
-            "#d81128"
-        ];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
         await this._Box.updateConfig({
             theme_customColorset: {
-                background: randomColor,
                 ...diceThemes.standard
             }
         });
